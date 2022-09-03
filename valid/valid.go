@@ -1,8 +1,10 @@
 package valid
 
 import (
+	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/go-playground/validator"
+	"os"
 )
 
 var customValidations = map[string]validator.Func{}
@@ -16,6 +18,14 @@ type conformOpt func(opts *conformConf)
 func WithValidator(v *validator.Validate) conformOpt {
 	return func(opts *conformConf) {
 		opts.Validator = v
+	}
+}
+
+func MustConform(i interface{}, opts ...conformOpt) {
+	err := Conform(i, opts...)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
 	}
 }
 
