@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func Choose[T fmt.Stringer](xs []T) (T, bool) {
+func Choose[T fmt.Stringer](xs []T) (*T, bool) {
 	s := bufio.NewScanner(os.Stdin)
 	for {
 		for i, x := range xs {
@@ -33,7 +33,6 @@ func Choose[T fmt.Stringer](xs []T) (T, bool) {
 			continue
 		}
 
-		return xs[n-1], true
+		return &xs[n-1], true
 	}
 }
-
