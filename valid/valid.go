@@ -13,15 +13,15 @@ type conformConf struct {
 	Validator *validator.Validate
 }
 
-type conformOpt func(opts *conformConf)
+type ConformOpt func(opts *conformConf)
 
-func WithValidator(v *validator.Validate) conformOpt {
+func WithValidator(v *validator.Validate) ConformOpt {
 	return func(opts *conformConf) {
 		opts.Validator = v
 	}
 }
 
-func MustConform(i interface{}, opts ...conformOpt) {
+func MustConform(i interface{}, opts ...ConformOpt) {
 	err := Conform(i, opts...)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
@@ -29,7 +29,7 @@ func MustConform(i interface{}, opts ...conformOpt) {
 	}
 }
 
-func Conform(i interface{}, opts ...conformOpt) error {
+func Conform(i interface{}, opts ...ConformOpt) error {
 	conf := conformConf{}
 	for _, opt := range opts {
 		opt(&conf)

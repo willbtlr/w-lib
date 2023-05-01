@@ -2,7 +2,8 @@ package marshallable
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -10,21 +11,28 @@ type Duration struct {
 	time.Duration
 }
 
-func (d *Duration) UnmarshalJSON(bs []byte) error {
-	var i interface{}
-	err := json.Unmarshal(bs, &i)
-	if err != nil {
+func (d *Duration) SetTaggedDefaults(tag string) (err error) {
+	d.Duration, err = time.ParseDuration(tag)
+	return
+}
+
+func (d *Duration) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
 		return err
 	}
-
-	if s, ok := i.(string); ok {
-		dur, err := time.ParseDuration(s)
-		if err != nil {
-			return err
-		}
-
-		d.Duration = dur
+	duration, err := time.ParseDuration(str)
+	if err != nil {
+		return fmt.Errorf("failed to parse duration %q: %v", str, err)
 	}
+	d.Duration = duration
+	return nil
+}
 
-	return errors.New("time.Duration field must be string")
+func (d *Duration) MarshalJSON() ([]byte, error) {
+	return []byte(strconv.Quote(d.String())), nil
+}
+
+func (d *Duration) String() string {
+	return d.Duration.String()
 }
